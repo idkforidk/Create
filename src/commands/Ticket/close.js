@@ -6,17 +6,19 @@ import { replyUserError, ErrorTypes } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 import { getTicketPermissionContext } from '../../utils/ticket/ticketPermissions.js';
 import { closeTicket } from '../../services/ticket.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("close")
-        .setDescription("Closes the current ticket.")
+        .setDescription("تسكر التذكرة الحالية")
         .setDMPermission(false)
         .addStringOption((option) =>
             option
                 .setName("reason")
-                .setDescription("The reason for closing the ticket.")
+                .setDescription("سبب إغلاق التذكرة")
                 .setRequired(false),
         ),
+    category: "Ticket",
 
     async execute(interaction, guildConfig, client) {
         const deferred = await InteractionHelper.safeDefer(interaction, { flags: MessageFlags.Ephemeral });
@@ -33,9 +35,7 @@ export default {
             return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'يبني تريد تسكر التذكرة بس ما عندك الصلاحية 🙅‍♂️ لازم تكون عندك `Manage Channels`، أو رول `Ticket Staff` المحدد، أو تكون أنت صاحب التذكرة نفسه.' });
         }
 
-        const reason =
-            interaction.options?.getString("reason") ||
-            "تسكرت عن طريق الأمر بدون سبب محدد.";
+        const reason = interaction.options?.getString("reason") || "تسكرت عن طريق الأمر بدون سبب محدد.";
 
         await closeTicket(interaction.channel, interaction.user, reason);
 
