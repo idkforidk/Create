@@ -109,7 +109,7 @@ export default {
                 guildId: interaction.guildId,
                 commandName: 'ticket'
             });
-            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'You need the `Manage Channels` permission for this action.' });
+            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'ولك شنو هاي؟ تحتاج صلاحية `Manage Channels` حتى تسوي هالحركة، مو كل واحد يجي يلعب بالتذاكر 😂' });
         }
 
         const subcommand = interaction.options.getSubcommand();
@@ -121,7 +121,7 @@ export default {
         if (subcommand === "setup") {
             const existingConfig = await getGuildConfig(client, interaction.guildId);
             if (existingConfig?.ticketPanelChannelId) {
-                return await replyUserError(interaction, { type: ErrorTypes.UNKNOWN, message: `This server already has a ticket system set up (panel in <#${existingConfig.ticketPanelChannelId}>).\n\nOnly one ticket system is supported per server. Use \`/ticket dashboard\` to edit or update the existing setup, or select **Delete System** from the dashboard to remove it and start fresh.` });
+                return await replyUserError(interaction, { type: ErrorTypes.UNKNOWN, message: `شبيك يا زلمة، السيرفر عدنه نظام تذاكر مسوّى خلص (اللوحة موجودة بـ <#${existingConfig.ticketPanelChannelId}>) 🎫\n\nما نكدر نسوي وحدة ثانية، نظام واحد بس يشتغل بكل سيرفر. استخدم \`/ticket dashboard\` حتى تعدل الموجود، أو دز على **Delete System** من الداشبورد وابدأ من جديد لو تريد.` });
             }
 
             const panelChannel =
@@ -129,10 +129,10 @@ export default {
             const categoryChannel = interaction.options.getChannel("category");
             const closedCategoryChannel = interaction.options.getChannel("closed_category");
             const staffRole = interaction.options.getRole("staff_role");
-const panelMessage = interaction.options.getString("panel_message") || "Click the button below to create a support ticket.";
+const panelMessage = interaction.options.getString("panel_message") || "أهلاً بك، إذا كنت بحاجة إلى المساعدة في أي شيء، يرجى فتح تذكرة دعم وسنتواصل معك في أقرب وقت ممكن.";
             const buttonLabel =
                 interaction.options.getString("button_label") ||
-"Create Ticket";
+"فتح تذكرة";
             const maxTicketsPerUser = interaction.options.getInteger("max_tickets_per_user") || 3;
 const dmOnClose = interaction.options.getBoolean("dm_on_close") !== false;
 
@@ -183,28 +183,28 @@ description: panelMessage,
                     });
                 }
 
-                let successMessage = `The ticket creation panel has been sent to ${panelChannel}.`;
+                let successMessage = `تمام يا نجم، لوحة التذاكر طارت لـ ${panelChannel} خلص جاهزة 🚀`;
                 
                 if (categoryChannel) {
-                    successMessage += `New tickets will be created in the **${categoryChannel.name}** category.`;
+                    successMessage += `التذاكر الجديدة راح تتولد جوه كاتيكوري **${categoryChannel.name}**.`;
                 } else {
-                    successMessage += 'New tickets will be created in a new "Tickets" category.';
+                    successMessage += 'التذاكر الجديدة راح تتولد بكاتيكوري جديدة اسمها "Tickets" (سويناها أوتوماتيك، ما تشيل هم).';
                 }
                 
                 if (closedCategoryChannel) {
-                    successMessage += `Closed tickets will be moved to **${closedCategoryChannel.name}**.`;
+                    successMessage += `التذاكر المسكرة راح تنكل لـ **${closedCategoryChannel.name}**.`;
                 }
                 
                 if (staffRole) {
-                    successMessage += `**${staffRole.name}** role will have access to tickets.`;
+                    successMessage += `رول **${staffRole.name}** عنده صلاحية يشوف التذاكر.`;
                 }
                 
-                successMessage += `\n\n**Max Tickets Per User:** ${maxTicketsPerUser}\n**DM on Close:** ${dmOnClose ? 'Enabled' : 'Disabled'}`;
+                successMessage += `\n\n**أعلى عدد تذاكر لكل شخص:** ${maxTicketsPerUser}\n**دي إم عند السكر:** ${dmOnClose ? 'مفعّل ✅' : 'موقف ❌'}`;
 
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            "Ticket Panel Set Up",
+                            "خلصت! لوحة التذاكر جاهزة 🎉",
                             successMessage,
                         ),
                     ],
@@ -281,7 +281,7 @@ description: panelMessage,
                     commandName: 'ticket_setup'
                 });
                 if (interaction.deferred || interaction.replied) {
-                    await replyUserError(interaction, { type: ErrorTypes.UNKNOWN, message: 'Could not send the ticket panel or save configuration. Check the bot\'s permissions (especially the ability to send messages in the target channel) and database connection.' }).catch(err => {
+                    await replyUserError(interaction, { type: ErrorTypes.UNKNOWN, message: 'ماكو فايدة، ما كدرت أدز لوحة التذاكر أو أحفظ الإعدادات 😩 تأكد إن البوت عنده صلاحية يرسل رسائل بالچانل المطلوب، وتأكد الداتابيس شغالة.' }).catch(err => {
                         logger.error('Failed to send error reply', {
                             error: err.message,
                             guildId: interaction.guildId
