@@ -26,24 +26,24 @@ export default {
 
         const permissionContext = await getTicketPermissionContext({ client, interaction });
         if (!permissionContext.ticketData) {
-            return await replyUserError(interaction, { type: ErrorTypes.VALIDATION, message: 'This command can only be used in a valid ticket channel.' });
+            return await replyUserError(interaction, { type: ErrorTypes.VALIDATION, message: 'شكو ماكو؟ 😅 هذا الأمر يشتغل بس داخل چانل تذكرة صحيح، مو بأي مكان.' });
         }
 
         if (!permissionContext.canCloseTicket) {
-            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'You need the `Manage Channels` permission, the configured `Ticket Staff Role`, or be the ticket creator to close this ticket.' });
+            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'يبني تريد تسكر التذكرة بس ما عندك الصلاحية 🙅‍♂️ لازم تكون عندك `Manage Channels`، أو رول `Ticket Staff` المحدد، أو تكون أنت صاحب التذكرة نفسه.' });
         }
 
         const reason =
             interaction.options?.getString("reason") ||
-            "Closed via command without a specific reason.";
+            "تسكرت عن طريق الأمر بدون سبب محدد.";
 
         await closeTicket(interaction.channel, interaction.user, reason);
 
         await InteractionHelper.safeEditReply(interaction, {
             embeds: [
                 successEmbed(
-                    "Ticket Closed!",
-                    "This ticket has been closed successfully.",
+                    "خلصت، سكرناها! 🔒",
+                    "التذكرة سُكرت بنجاح، الله معاك 🤝",
                 ),
             ],
         });
