@@ -20,11 +20,11 @@ export default {
 
         const permissionContext = await getTicketPermissionContext({ client, interaction });
         if (!permissionContext.ticketData) {
-            return await replyUserError(interaction, { type: ErrorTypes.VALIDATION, message: 'This command can only be used in a valid ticket channel.' });
+            return await replyUserError(interaction, { type: ErrorTypes.VALIDATION, message: 'وين رايح؟ 😅 هاي الأمر يشتغل بس داخل چانل تذكرة صحيح.' });
         }
 
         if (!permissionContext.canManageTicket) {
-            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'You need the `Manage Channels` permission or the configured `Ticket Staff Role` to claim tickets.' });
+            return await replyUserError(interaction, { type: ErrorTypes.PERMISSION, message: 'هدي هدي، تحتاج صلاحية `Manage Channels` أو رول `Ticket Staff` المحدد حتى تكدر تسحب (تكليم) التذكرة 🙅‍♂️' });
         }
 
         await claimTicket(interaction.channel, interaction.user);
@@ -32,8 +32,8 @@ export default {
         await InteractionHelper.safeEditReply(interaction, {
             embeds: [
                 successEmbed(
-                    "Ticket Claimed!",
-                    "You have successfully claimed this ticket.",
+                    "خذيتها! 🎯",
+                    "مبروك، التذكرة صارت مسؤوليتك من هسه.",
                 ),
             ],
         });
