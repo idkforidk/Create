@@ -1,4 +1,4 @@
-import { getColor } from ‘../../../config/bot.js’;
+import { getColor } from '../../../config/bot.js';
 import {
 ActionRowBuilder,
 StringSelectMenuBuilder,
