@@ -15,12 +15,12 @@ function getSubcommandInfo(commandData) {
     
     if (commandData.options) {
         for (const option of commandData.options) {
-if (option.type === 1) {
+            if (option.type === 1) {
                 subcommands.push(option.name);
-} else if (option.type === 2) {
+            } else if (option.type === 2) {
                 if (option.options) {
                     for (const subOption of option.options) {
-if (subOption.type === 1) {
+                        if (subOption.type === 1) {
                             subcommands.push(`${option.name}/${subOption.name}`);
                         }
                     }
@@ -83,7 +83,6 @@ export async function loadCommands(client) {
             
             if (!uniqueCommandNames.has(primaryCommandName)) {
                 uniqueCommandNames.add(primaryCommandName);
-                
                 client.commands.set(primaryCommandName, command);
             }
             
@@ -100,14 +99,14 @@ export async function loadCommands(client) {
         }
     }
     
-    const commandsWithSubcommands = Array.from(client.commands.values()).filter(cmd => {
-        const subcommands = getSubcommandInfo(cmd.data.toJSON());
-        return subcommands.length > 0;
-    });
-    
-    const totalSubcommands = commandsWithSubcommands.reduce((total, cmd) => {
-        return total + getSubcommandInfo(cmd.data.toJSON()).length;
-    }, 0);
+    // 🔍 DEBUG: Show all loaded commands
+    logger.info('═══════════════════════════════════════');
+    logger.info('ALL LOADED COMMANDS:');
+    for (const [name, cmd] of client.commands) {
+        const subInfo = getSubcommandInfo(cmd.data.toJSON());
+        logger.info(`  /${name}${subInfo.length ? ' → ' + subInfo.join(', ') : ''}`);
+    }
+    logger.info('═══════════════════════════════════════');
     
     const uniqueCommands = new Set();
     for (const [name, command] of client.commands.entries()) {
@@ -116,7 +115,7 @@ export async function loadCommands(client) {
         }
     }
     
-    logger.info(`Loaded ${uniqueCommands.size} commands`);
+    logger.info(`Loaded ${uniqueCommands.size} unique commands`);
     return client.commands;
 }
 
@@ -148,6 +147,21 @@ function collectCommandPayloads(client) {
             logger.debug(`Registering command: ${commandName}`);
         }
     }
+    
+    // 🔍 DEBUG: Show what's being sent to Discord
+    logger.info('═══════════════════════════════════════');
+    logger.info('COMMANDS BEING REGISTERED:');
+    for (const cmd of commands) {
+        logger.info(`  /${cmd.name} - ${cmd.description}`);
+        if (cmd.options) {
+            for (const opt of cmd.options) {
+                if (opt.type === 1) {
+                    logger.info(`    ↳ ${opt.name} - ${opt.description}`);
+                }
+            }
+        }
+    }
+    logger.info('═══════════════════════════════════════');
 
     return { commands, totalSubcommands };
 }
@@ -252,14 +266,47 @@ async function registerGlobalCommands(client, clientId, commands, totalSubcomman
 
     const commandsToRegister = prepareCommandsForRegistration(commands);
 
+    // 🔍 DEBUG: Check if ticket command is in the payload
+    const ticketCommand = commandsToRegister.find(c => c.name === 'ticket');
+    if (ticketCommand) {
+        logger.info('✅ TICKET COMMAND FOUND IN PAYLOAD:');
+        logger.info(JSON.stringify(ticketCommand, null, 2));
+    } else {
+        logger.error('❌ TICKET COMMAND NOT FOUND in registration payload!');
+        logger.info('Commands in payload:', commandsToRegister.map(c => c.name).join(', '));
+    }
+
     if (botConfig.commands?.deleteCommands) {
         logger.info('Clearing existing global commands before registration...');
         await client.rest.put(`/applications/${clientId}/commands`, { body: [] });
     }
 
     logger.info(`Registering ${commandsToRegister.length} global commands...`);
-    await client.rest.put(`/applications/${clientId}/commands`, { body: commandsToRegister });
-    logger.info(`Successfully registered ${commandsToRegister.length} global commands`);
+    
+    try {
+        const result = await client.rest.put(`/applications/${clientId}/commands`, { body: commandsToRegister });
+        logger.info(`✅ Successfully registered ${Array.isArray(result) ? result.length : '?'} global commands`);
+        
+        // 🔍 DEBUG: Verify what Discord actually received
+        if (Array.isArray(result)) {
+            const ticketRegistered = result.find(c => c.name === 'ticket');
+            if (ticketRegistered) {
+                logger.info('✅ Discord confirmed /ticket command registered!');
+            } else {
+                logger.error('❌ Discord DID NOT register /ticket command!');
+                logger.info('Discord response commands:', result.map(c => c.name).join(', '));
+            }
+        }
+    } catch (error) {
+        logger.error('❌ Failed to register commands with Discord API:');
+        logger.error('Status:', error.status);
+        logger.error('Message:', error.message);
+        if (error.rawError?.errors) {
+            logger.error('Discord API Errors:', JSON.stringify(error.rawError.errors, null, 2));
+        }
+        throw error;
+    }
+    
     logger.info('Global commands may take up to an hour to appear in all servers on first deploy');
 }
 
