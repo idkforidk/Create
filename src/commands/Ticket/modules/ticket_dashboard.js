@@ -1,4 +1,4 @@
-import { getColor } from '../../../config/bot.js';
+import { getColor } from ‘../../../config/bot.js’;
 import {
 ActionRowBuilder,
 StringSelectMenuBuilder,
@@ -15,24 +15,24 @@ ChannelType,
 MessageFlags,
 ComponentType,
 EmbedBuilder,
-} from 'discord.js';
-import { InteractionHelper } from '../../../utils/interactionHelper.js';
-import { successEmbed, infoEmbed } from '../../../utils/embeds.js';
-import { logger } from '../../../utils/logger.js';
-import { TitanBotError, ErrorTypes, replyUserError } from '../../../utils/errorHandler.js';
-import { getGuildConfig, setGuildConfig } from '../../../services/config/guildConfig.js';
-import { getGuildTicketStats } from '../../../utils/database/tickets.js';
-import { getUserTicketCount } from '../../../services/ticket.js';
+} from ‘discord.js’;
+import { InteractionHelper } from ‘../../../utils/interactionHelper.js’;
+import { successEmbed, infoEmbed } from ‘../../../utils/embeds.js’;
+import { logger } from ‘../../../utils/logger.js’;
+import { TitanBotError, ErrorTypes, replyUserError } from ‘../../../utils/errorHandler.js’;
+import { getGuildConfig, setGuildConfig } from ‘../../../services/config/guildConfig.js’;
+import { getGuildTicketStats } from ‘../../../utils/database/tickets.js’;
+import { getUserTicketCount } from ‘../../../services/ticket.js’;
 import {
 getTicketPanelStatus,
 messageHasButtonCustomId,
 formatPanelStatusField,
-} from '../../../utils/panelStatus.js';
-import { startDashboardSession } from '../../../utils/dashboardSession.js';
+} from ‘../../../utils/panelStatus.js’;
+import { startDashboardSession } from ‘../../../utils/dashboardSession.js’;
 
 function buildButtonRow(guildConfig, guildId, disabled = false, panelStatus = null) {
 const dmEnabled = guildConfig.dmOnClose !== false;
-const showRepost = panelStatus?.exists === false && panelStatus?.reason === 'panel_deleted';
+const showRepost = panelStatus?.exists === false && panelStatus?.reason === ‘panel_deleted’;
 
 ```
 const buttons = [];
@@ -84,18 +84,18 @@ await setGuildConfig(client, guildId, guildConfig);
 
 function buildPanelEmbed(config) {
 return new EmbedBuilder()
-.setTitle('تذاكر الدعم')
-.setDescription(config.ticketPanelMessage || 'اضغط الزر تحت حتى تفتح تذكرة دعم.')
-.setColor(getColor('info'));
+.setTitle(‘تذاكر الدعم’)
+.setDescription(config.ticketPanelMessage || ‘اضغط الزر تحت حتى تفتح تذكرة دعم.’)
+.setColor(getColor(‘info’));
 }
 
 function buildPanelButtonRow(config) {
 return new ActionRowBuilder().addComponents(
 new ButtonBuilder()
-.setCustomId('create_ticket')
-.setLabel(config.ticketButtonLabel || 'فتح تذكرة')
+.setCustomId(‘create_ticket’)
+.setLabel(config.ticketButtonLabel || ‘فتح تذكرة’)
 .setStyle(ButtonStyle.Primary)
-.setEmoji('📩'),
+.setEmoji(‘📩’),
 );
 }
 
@@ -103,9 +103,9 @@ async function repostTicketPanel(client, guild, guildConfig, guildId) {
 const channel = await guild.channels.fetch(guildConfig.ticketPanelChannelId).catch(() => null);
 if (!channel) {
 throw new TitanBotError(
-'Panel channel missing',
+‘Panel channel missing’,
 ErrorTypes.CONFIGURATION,
-'چانل اللوحة المحدد ماكو موجود هسه. اختار چانل جديد من الداشبورد.',
+‘چانل اللوحة المحدد ماكو موجود هسه. اختار چانل جديد من الداشبورد.’,
 );
 }
 
@@ -122,7 +122,7 @@ return sentPanel;
 }
 
 function formatCloseDuration(ms) {
-if (ms == null) return '`غير متوفر`';
+if (ms == null) return ‘`غير متوفر`’;
 const hours = Math.floor(ms / 3_600_000);
 const minutes = Math.floor((ms % 3_600_000) / 60_000);
 if (hours > 0) return `${hours}h ${minutes}m`;
@@ -130,10 +130,10 @@ return `${minutes}m`;
 }
 
 function buildDashboardEmbed(config, guild, panelStatus = null, ticketStats = null) {
-const panelChannel = config.ticketPanelChannelId ? `<#${config.ticketPanelChannelId}>` : '`ماكو محدد`';
-const staffRole = config.ticketStaffRoleId ? `<@&${config.ticketStaffRoleId}>` : '`ماكو محدد`';
-const ticketLogsChannel = config.ticketLogsChannelId ? `<#${config.ticketLogsChannelId}>` : '`ماكو محدد`';
-const transcriptChannel = config.ticketTranscriptChannelId ? `<#${config.ticketTranscriptChannelId}>` : '`ماكو محدد`';
+const panelChannel = config.ticketPanelChannelId ? `<#${config.ticketPanelChannelId}>` : ‘`ماكو محدد`’;
+const staffRole = config.ticketStaffRoleId ? `<@&${config.ticketStaffRoleId}>` : ‘`ماكو محدد`’;
+const ticketLogsChannel = config.ticketLogsChannelId ? `<#${config.ticketLogsChannelId}>` : ‘`ماكو محدد`’;
+const transcriptChannel = config.ticketTranscriptChannelId ? `<#${config.ticketTranscriptChannelId}>` : ‘`ماكو محدد`’;
 
 ```
 const openCategoryChannel = config.ticketCategoryId ? guild.channels.cache.get(config.ticketCategoryId) : null;
@@ -186,43 +186,43 @@ return new EmbedBuilder()
 function buildSelectMenu(guildId) {
 return new StringSelectMenuBuilder()
 .setCustomId(`ticket_config_${guildId}`)
-.setPlaceholder('اختار شنو تريد تعدل…')
+.setPlaceholder(‘اختار شنو تريد تعدل…’)
 .addOptions(
 new StringSelectMenuOptionBuilder()
-.setLabel('عدل رسالة اللوحة')
-.setDescription('غير الرسالة المعروضة بلوحة إنشاء التذاكر')
-.setValue('panel_message')
-.setEmoji('📝'),
+.setLabel(‘عدل رسالة اللوحة’)
+.setDescription(‘غير الرسالة المعروضة بلوحة إنشاء التذاكر’)
+.setValue(‘panel_message’)
+.setEmoji(‘📝’),
 new StringSelectMenuOptionBuilder()
-.setLabel('عدل نص الزر')
-.setDescription('غير النص المكتوب على زر فتح تذكرة')
-.setValue('button_label')
-.setEmoji('🏷️'),
+.setLabel(‘عدل نص الزر’)
+.setDescription(‘غير النص المكتوب على زر فتح تذكرة’)
+.setValue(‘button_label’)
+.setEmoji(‘🏷️’),
 new StringSelectMenuOptionBuilder()
-.setLabel('غير كاتيكوري التذاكر المفتوحة')
-.setDescription('الكاتيكوري اللي تتولد بيه التذاكر الجديدة')
-.setValue('open_category')
-.setEmoji('📁'),
+.setLabel(‘غير كاتيكوري التذاكر المفتوحة’)
+.setDescription(‘الكاتيكوري اللي تتولد بيه التذاكر الجديدة’)
+.setValue(‘open_category’)
+.setEmoji(‘📁’),
 new StringSelectMenuOptionBuilder()
-.setLabel('غير كاتيكوري التذاكر المسكرة')
-.setDescription('الكاتيكوري اللي تنكل ليه التذاكر المسكرة')
-.setValue('closed_category')
-.setEmoji('📂'),
+.setLabel(‘غير كاتيكوري التذاكر المسكرة’)
+.setDescription(‘الكاتيكوري اللي تنكل ليه التذاكر المسكرة’)
+.setValue(‘closed_category’)
+.setEmoji(‘📂’),
 new StringSelectMenuOptionBuilder()
-.setLabel('حدد أعلى تذاكر لكل شخص')
-.setDescription('حدد أعلى عدد تذاكر مفتوحة يكدر يسويها شخص وحد بنفس الوكت')
-.setValue('max_tickets')
-.setEmoji('🔢'),
+.setLabel(‘حدد أعلى تذاكر لكل شخص’)
+.setDescription(‘حدد أعلى عدد تذاكر مفتوحة يكدر يسويها شخص وحد بنفس الوكت’)
+.setValue(‘max_tickets’)
+.setEmoji(‘🔢’),
 new StringSelectMenuOptionBuilder()
-.setLabel('حدد چانل لوگات التذاكر')
-.setDescription('الچانل اللي يستقبل الفيدباك، أحداث التذاكر، واللوگات')
-.setValue('logs_channel')
-.setEmoji('🎫'),
+.setLabel(‘حدد چانل لوگات التذاكر’)
+.setDescription(‘الچانل اللي يستقبل الفيدباك، أحداث التذاكر، واللوگات’)
+.setValue(‘logs_channel’)
+.setEmoji(‘🎫’),
 new StringSelectMenuOptionBuilder()
-.setLabel('حدد چانل الترانسكربت')
-.setDescription('الچانل اللي يستقبل الترانسكربت التلقائي عند حذف التذكرة')
-.setValue('transcript_channel')
-.setEmoji('📜'),
+.setLabel(‘حدد چانل الترانسكربت’)
+.setDescription(‘الچانل اللي يستقبل الترانسكربت التلقائي عند حذف التذكرة’)
+.setValue(‘transcript_channel’)
+.setEmoji(‘📜’),
 );
 }
 
@@ -363,22 +363,22 @@ const guildConfig = await getGuildConfig(client, guildId);
 
 async function handlePanelMessage(selectInteraction, rootInteraction, guildConfig, guildId, client) {
 const modal = new ModalBuilder()
-.setCustomId('ticket_cfg_panel_msg')
-.setTitle('📝 عدل رسالة اللوحة')
+.setCustomId(‘ticket_cfg_panel_msg’)
+.setTitle(‘📝 عدل رسالة اللوحة’)
 .addComponents(
 new ActionRowBuilder().addComponents(
 new TextInputBuilder()
-.setCustomId('panel_msg_input')
-.setLabel('رسالة اللوحة')
+.setCustomId(‘panel_msg_input’)
+.setLabel(‘رسالة اللوحة’)
 .setStyle(TextInputStyle.Paragraph)
 .setValue(
 guildConfig.ticketPanelMessage ||
-'اضغط الزر تحت حتى تفتح تذكرة دعم.',
+‘اضغط الزر تحت حتى تفتح تذكرة دعم.’,
 )
 .setMaxLength(2000)
 .setMinLength(1)
 .setRequired(true)
-.setPlaceholder('اضغط الزر تحت حتى تفتح تذكرة دعم.'),
+.setPlaceholder(‘اضغط الزر تحت حتى تفتح تذكرة دعم.’),
 ),
 );
 
@@ -422,19 +422,19 @@ await refreshDashboard(rootInteraction, guildConfig, guildId, client);
 
 async function handleButtonLabel(selectInteraction, rootInteraction, guildConfig, guildId, client) {
 const modal = new ModalBuilder()
-.setCustomId('ticket_cfg_btn_label')
-.setTitle('🏷️ عدل نص الزر')
+.setCustomId(‘ticket_cfg_btn_label’)
+.setTitle(‘🏷️ عدل نص الزر’)
 .addComponents(
 new ActionRowBuilder().addComponents(
 new TextInputBuilder()
-.setCustomId('btn_label_input')
-.setLabel('نص الزر (أعلى 80 حرف)')
+.setCustomId(‘btn_label_input’)
+.setLabel(‘نص الزر (أعلى 80 حرف)’)
 .setStyle(TextInputStyle.Short)
-.setValue(guildConfig.ticketButtonLabel || 'فتح تذكرة')
+.setValue(guildConfig.ticketButtonLabel || ‘فتح تذكرة’)
 .setMaxLength(80)
 .setMinLength(1)
 .setRequired(true)
-.setPlaceholder('فتح تذكرة'),
+.setPlaceholder(‘فتح تذكرة’),
 ),
 );
 
@@ -663,19 +663,19 @@ catCollector.on('end', (collected, reason) => {
 
 async function handleMaxTickets(selectInteraction, rootInteraction, guildConfig, guildId, client) {
 const modal = new ModalBuilder()
-.setCustomId('ticket_cfg_max_tickets')
-.setTitle('حدد أعلى تذاكر لكل شخص')
+.setCustomId(‘ticket_cfg_max_tickets’)
+.setTitle(‘حدد أعلى تذاكر لكل شخص’)
 .addComponents(
 new ActionRowBuilder().addComponents(
 new TextInputBuilder()
-.setCustomId('max_tickets_input')
-.setLabel('أعلى تذاكر مفتوحة (1–10)')
+.setCustomId(‘max_tickets_input’)
+.setLabel(‘أعلى تذاكر مفتوحة (1–10)’)
 .setStyle(TextInputStyle.Short)
 .setValue(String(guildConfig.maxTicketsPerUser || 3))
 .setMaxLength(2)
 .setMinLength(1)
 .setRequired(true)
-.setPlaceholder('3'),
+.setPlaceholder(‘3’),
 ),
 );
 
@@ -957,15 +957,15 @@ await refreshDashboard(rootInteraction, guildConfig, guildId, client);
 
 async function handleDeleteSystem(btnInteraction, rootInteraction, guildConfig, guildId, client) {
 const deleteModal = new ModalBuilder()
-.setCustomId('ticket_delete_confirm_modal')
-.setTitle('حذف نظام التذاكر')
+.setCustomId(‘ticket_delete_confirm_modal’)
+.setTitle(‘حذف نظام التذاكر’)
 .addComponents(
 new ActionRowBuilder().addComponents(
 new TextInputBuilder()
-.setCustomId('delete_confirmation')
-.setLabel('اكتب "DELETE" حتى تأكد')
+.setCustomId(‘delete_confirmation’)
+.setLabel(‘اكتب “DELETE” حتى تأكد’)
 .setStyle(TextInputStyle.Short)
-.setPlaceholder('DELETE')
+.setPlaceholder(‘DELETE’)
 .setMaxLength(6)
 .setMinLength(6)
 .setRequired(true)
