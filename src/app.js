@@ -90,36 +90,16 @@ class TitanBot extends Client {
       await this.login(this.config.bot.token);
       startupLog('Discord login successful');
       
-      // 🔥 AUTO REPLY SYSTEM
+      // 🔥 AUTO REPLY + AUTO MOD SYSTEM
       this.on('messageCreate', async (message) => {
-          if (message.author.bot) return;
+          if (!message.guild) return;
           
-          const prefix = this.config?.commands?.prefix || '!';
-          if (message.content.startsWith(prefix)) return;
-          
-          const content = message.content.trim();
-          
-          const autoReplies = {
-              'انجب': 'انجب',
-              'هاي': 'هاي يا وردة 🌹',
-              'شلونك': 'الحمد لله، وأنت شلونك؟',
-              'بوت': 'نعم حبيبي، شتريد؟ 🤖',
-              'سلام': 'وعليكم السلام والرحمة 🌸',
-              'شكرا': 'عفواً، تدلل 🤍',
-              'صباح الخير': 'صباح النور والياسمين 🌤️',
-              'مساء الخير': 'مساء الفل والياسمين 🌙',
-          };
-          
-          for (const [trigger, reply] of Object.entries(autoReplies)) {
-              if (content.includes(trigger)) {
-                  try {
-                      await message.reply(reply);
-                  } catch (error) {}
-                  break;
-              }
-          }
+          try {
+              const autoreply = await import('./handlers/autoreply.js');
+              await autoreply.default.execute(message, this);
+          } catch (error) {}
       });
-      // 🔥 END AUTO REPLY
+      // 🔥 END AUTO REPLY + AUTO MOD
       
       startupLog('Registering slash commands globally...');
       await this.registerCommands();
