@@ -2724,8 +2724,6 @@ export default [
   "zoophile",
   "zoophilia",
   "🖕",
-  " احا",
-  " احه",
   " اير ",
   " لعين",
   " واطي",
