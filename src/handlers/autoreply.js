@@ -11,14 +11,14 @@ const BAD_WORDS = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'pussy', 'cunt',
     'motherfucker', 'dumbass', 'jackass', 'whore', 'slut',
     
-    // Arabic
-    'كس', 'زب', 'طيز', 'منيوك', 'شرموط', 'عير', 'كلب', 'خول', 'متناك',
-    'احا', 'خرة', 'زبالة', 'حقير', 'نجس', 'وسخ', 'قحبة', 'ديوث',
+    // Arabic (actual heavy swear words)
+    'كس', 'زب', 'طيز', 'منيوك', 'شرموط', 'عير', 'خول', 'متناك',
+    'قحبة', 'ديوث',
     'ابن الكلب', 'ابن القحبة', 'كس امك', 'كس اختك', 'طيزي',
     
     // Arabic in English letters
     'kos', 'zeb', 'tiz', 'manyok', 'sharmot', 'khawal', 'motanak',
-    'kosomak', 'kosokhtak', 'kosom', 'ahbal', 'hayawan',
+    'kosomak', 'kosokhtak', 'kosom',
 ];
 
 // Auto reply triggers
